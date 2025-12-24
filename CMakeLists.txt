@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.24)
 
 # Project
 project(
@@ -46,6 +46,25 @@ target_compile_options(
 find_package(OpenGL 4.6 REQUIRED)
 
 target_link_libraries(main PRIVATE OpenGL::OpenGL)
+
+# GLFW
+include(FetchContent)
+
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
+
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 3.3.10
+    GIT_SHALLOW ON
+    FIND_PACKAGE_ARGS 3.3.10 NAMES glfw3
+)
+
+FetchContent_MakeAvailable(glfw)
+
+target_link_libraries(main PRIVATE glfw)
 
 # Test
 include(CTest)

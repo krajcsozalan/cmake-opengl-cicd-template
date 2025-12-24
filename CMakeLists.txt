@@ -20,7 +20,7 @@ project(
     CMake-OpenGL
     DESCRIPTION "Template repository for CMake OpenGL projects."
     HOMEPAGE_URL "https://github.com/krajcsozalan/cmake-opengl-cicd-template"
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 
 install(FILES LICENSE TYPE DOC)
@@ -65,6 +65,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glfw)
 
 target_link_libraries(main PRIVATE glfw)
+
+# glad
+FetchContent_Declare(
+    glad
+    GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+    GIT_TAG v2.0.8
+    GIT_SHALLOW ON
+    SOURCE_SUBDIR cmake
+)
+
+FetchContent_MakeAvailable(glad)
+
+glad_add_library(glad API gl:core=4.6)
+
+target_link_libraries(main PRIVATE glad)
 
 # Test
 include(CTest)

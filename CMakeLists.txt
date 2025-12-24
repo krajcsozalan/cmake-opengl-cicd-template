@@ -42,6 +42,11 @@ target_compile_options(
     PRIVATE $<$<CONFIG:Debug>:$<IF:$<CXX_COMPILER_ID:MSVC>,/W4,-Wall;-Wextra;-Wpedantic>>
 )
 
+# OpenGL
+find_package(OpenGL 4.6 REQUIRED)
+
+target_link_libraries(main PRIVATE OpenGL::OpenGL)
+
 # Test
 include(CTest)
 

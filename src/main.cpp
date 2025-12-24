@@ -19,6 +19,8 @@
 #include <iostream>
 #include <string_view>
 
+#include <GL/gl.h>
+
 int main(int argc, const char *argv[]) {
     if (argc == 1) {
         std::cout

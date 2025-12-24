@@ -35,6 +35,8 @@ jobs:
           sparse-checkout-cone-mode: false
       - name: Lint files
         run: |
-          export RANGE="${{ github.base_ref }}..${{ github.head_ref }}"
+          export BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          export HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          export RANGE="$BASE_SHA..$HEAD_SHA"
           export FILES="$(git diff --name-only $RANGE | egrep "\.(hpp|cpp)$")"
           clang-format --dry-run -Werror $FILES

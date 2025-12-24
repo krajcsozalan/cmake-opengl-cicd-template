@@ -41,3 +41,13 @@ target_compile_options(
     main
     PRIVATE $<$<CONFIG:Debug>:$<IF:$<CXX_COMPILER_ID:MSVC>,/W4,-Wall;-Wextra;-Wpedantic>>
 )
+
+# Test
+include(CTest)
+
+add_executable(
+    test_main
+    "${PROJECT_SOURCE_DIR}/src/tests/test_main.cpp"
+)
+
+add_test(NAME main COMMAND test_main)

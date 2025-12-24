@@ -17,7 +17,6 @@ name: Lint
 on:
   pull_request:
     types: [opened, synchronize]
-    paths: ['**.hpp', '**.cpp']
 jobs:
   lint:
     name: Lint
@@ -39,4 +38,4 @@ jobs:
           export HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           export RANGE="$BASE_SHA..$HEAD_SHA"
           export FILES="$(git diff --name-only $RANGE | egrep "\.(hpp|cpp)$")"
-          clang-format --dry-run -Werror $FILES
+          clang-format --dry-run -Werror $FILES /dev/null

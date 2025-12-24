@@ -20,6 +20,15 @@
 #include <string_view>
 
 #include <GL/gl.h>
+#include <GLFW/glfw3.h>
+
+[[noreturn]] static void glfw_error_callback(int error_code,
+                                             const char *description) {
+    std::cerr << "GLFW error 0x" << std::hex << error_code << ": "
+              << description << std::endl;
+
+    std::exit(EXIT_FAILURE);
+}
 
 int main(int argc, const char *argv[]) {
     if (argc == 1) {
@@ -58,6 +67,25 @@ int main(int argc, const char *argv[]) {
             return EXIT_SUCCESS;
         }
     }
+
+    glfwSetErrorCallback(glfw_error_callback);
+
+    glfwInit();
+    std::atexit(glfwTerminate);
+
+    std::cout << "Initialized GLFW" << std::endl;
+
+    GLFWwindow *window = glfwCreateWindow(
+        640, 480, "CMake OpenGL CI/CD Template", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+
+    std::cout << "Created window" << std::endl;
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window);
 
     return EXIT_SUCCESS;
 }

@@ -1,0 +1,70 @@
+# cmake-opengl-cicd-template - Template repository for CMake OpenGL projects
+# Copyright (C) 2025  krajcsozalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+name: Build
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+      configuration-options:
+        type: string
+      build-options:
+        type: string
+  workflow_dispatch:
+    inputs:
+      os:
+        required: true
+        type: choice
+        options:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+      dependencies:
+        type: string
+      configuration-options:
+        type: string
+      build-options:
+        type: string
+jobs:
+  build:
+    name: Build
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Install dependencies (Linux)
+        if: ${{ runner.os == 'Linux' && inputs.dependencies }}
+        run: sudo apt install ${{ inputs.dependencies }}
+      - name: Install dependencies (Windows)
+        if: ${{ runner.os == 'Windows' && inputs.dependencies }}
+        run: choco install ${{ inputs.dependencies }}
+      - name: Install dependencies (macOS)
+        if: ${{ runner.os == 'macOS' && inputs.dependencies }}
+        run: brew install ${{ inputs.dependencies }}
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Configure project
+        run: cmake -B build ${{ inputs.configuration-options }}
+      - name: Build project
+        run: cmake --build build ${{ inputs.build-options }}
+      - name: Upload build
+        uses: actions/upload-artifact@v6
+        with:
+          name: Build (${{ runner.os }})
+          path: build
+          compression-level: 9

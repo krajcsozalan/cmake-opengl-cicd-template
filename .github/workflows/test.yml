@@ -27,6 +27,8 @@ jobs:
     with:
       os: ubuntu-latest
       dependencies: libglfw3-dev
+      python-version: 3.14
+      python-dependencies: jinja2
       archive-build: true
   test:
     name: Test

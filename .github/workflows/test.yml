@@ -18,19 +18,31 @@ on:
   pull_request:
     types: [opened, synchronize]
 jobs:
+  build:
+    name: Build
+    permissions:
+      actions: write
+      contents: read
+    uses: krajcsozalan/cmake-opengl-cicd-template/.github/workflows/build.yml@main
+    with:
+      os: ubuntu-latest
+      archive-build: true
   test:
     name: Test
     permissions:
       actions: write
       contents: read
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
-      - name: Configure project
-        run: cmake -B build
-      - name: Build project
-        run: cmake --build build
+      - name: Download build
+        uses: actions/download-artifact@v7
+        with:
+          path: build
+      - name: Unarchive build
+        run: tar -xf build/build.tar
       - name: Run tests
         run: ctest --test-dir build -O results.txt
       - name: Upload results

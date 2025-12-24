@@ -1,0 +1,120 @@
+# cmake-opengl-cicd-template - Template repository for CMake OpenGL projects
+# Copyright (C) 2025  krajcsozalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+name: Package
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+      dependencies:
+        type: string
+      python-version:
+        type: string
+      python-dependencies:
+        type: string
+      configuration-options:
+        type: string
+      build-options:
+        type: string
+      archive-build:
+        type: boolean
+      generator:
+        required: true
+        type: string
+      extension:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      os:
+        required: true
+        type: choice
+        options:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+      dependencies:
+        type: string
+      python-version:
+        type: string
+      python-dependencies:
+        type: string
+      configuration-options:
+        type: string
+      build-options:
+        type: string
+      archive-build:
+        type: boolean
+      generator:
+        required: true
+        type: string
+      extension:
+        required: true
+        type: string
+jobs:
+  build:
+    name: Build
+    permissions:
+      actions: write
+      contents: read
+    uses: krajcsozalan/cmake-opengl-cicd-template/.github/workflows/build.yml@main
+    with:
+      os: ${{ inputs.os }}
+      dependencies: ${{ inputs.dependencies }}
+      python-version: ${{ inputs.python-version }}
+      python-dependencies: ${{ inputs.python-dependencies }}
+      configuration-options: ${{ inputs.configuration-options }}
+      build-options: ${{ inputs.build-options }}
+  package:
+    name: Package
+    permissions:
+      actions: write
+      contents: read
+    needs: build
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Download build
+        uses: actions/download-artifact@v7
+        with:
+          name: Build (${{ runner.os }})
+      - name: Install dependencies (Linux)
+        if: ${{ runner.os == 'Linux' && inputs.dependencies }}
+        run: sudo apt install ${{ inputs.dependencies }}
+      - name: Install dependencies (Windows)
+        if: ${{ runner.os == 'Windows' && inputs.dependencies }}
+        run: choco install ${{ inputs.dependencies }}
+      - name: Install dependencies (macOS)
+        if: ${{ runner.os == 'macOS' && inputs.dependencies }}
+        run: brew install ${{ inputs.dependencies }}
+      - name: Set up Python
+        if: ${{ inputs.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies (Python)
+        if: ${{ inputs.python-version && inputs.python-dependencies }}
+        run: pip install ${{ inputs.python-dependencies }}
+      - name: Package project
+        run: cpack --config build/CPackConfig.cmake -G ${{ inputs.generator }}
+      - name: Upload package
+        uses: actions/upload-artifact@v6
+        with:
+          name: Package (${{ runner.os }})
+          path: '*.${{ inputs.extension }}'
+          compression-level: 9

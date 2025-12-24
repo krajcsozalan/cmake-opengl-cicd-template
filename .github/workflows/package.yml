@@ -1,0 +1,70 @@
+# cmake-opengl-cicd-template - Template repository for CMake OpenGL projects
+# Copyright (C) 2025  krajcsozalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+name: Package
+on:
+  push
+jobs:
+  build:
+    name: Build
+    permissions:
+      actions: write
+      contents: read
+    uses: krajcsozalan/cmake-opengl-cicd-template/.github/workflows/build.yml@main
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            dependencies: libglfw3-dev
+            python-version: 3.14
+            python-dependencies: jinja2
+            configuration-options: -G "Ninja Multi-Config"
+            build-options: --config Release
+          - os: windows-latest
+            python-version: 3.14
+            python-dependencies: jinja2
+            build-options: --config Release
+          - os: macos-latest
+            dependencies: glfw
+            python-version: 3.14
+            python-dependencies: jinja2
+            configuration-options: -G "Ninja Multi-Config"
+            build-options: --config Release
+    with:
+      os: ${{ matrix.os }}
+      dependencies: ${{ matrix.dependencies }}
+      python-version: ${{ matrix.python-version }}
+      python-dependencies: ${{ matrix.python-dependencies }}
+      configuration-options: ${{ matrix.configuration-options }}
+      build-options: ${{ matrix.build-options }}
+      archive-build: ${{ matrix.archive-build }}
+  package:
+    name: Package
+    permissions:
+      actions: write
+      contents: read
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Download builds
+        uses: actions/download-artifact@v7
+        with:
+          path: build
+      - name: Debug
+        run: |
+          ls
+          ls build

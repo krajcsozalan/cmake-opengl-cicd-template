@@ -24,6 +24,8 @@ on:
         type: string
       build-options:
         type: string
+      archive-build:
+        type: boolean
   workflow_dispatch:
     inputs:
       os:
@@ -39,6 +41,8 @@ on:
         type: string
       build-options:
         type: string
+      archive-build:
+        type: boolean
 jobs:
   build:
     name: Build
@@ -62,9 +66,16 @@ jobs:
         run: cmake -B build ${{ inputs.configuration-options }}
       - name: Build project
         run: cmake --build build ${{ inputs.build-options }}
+      - name: Archive build
+        if: ${{ runner.os == 'Linux' && inputs.archive-build }}
+        run: |
+          tar -cvf build.tar build/**
+          rm -rf build
       - name: Upload build
         uses: actions/upload-artifact@v6
         with:
           name: Build (${{ runner.os }})
-          path: build
+          path: |
+            build.tar
+            build
           compression-level: 9

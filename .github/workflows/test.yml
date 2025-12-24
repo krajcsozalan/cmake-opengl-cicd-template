@@ -26,6 +26,7 @@ jobs:
     uses: krajcsozalan/cmake-opengl-cicd-template/.github/workflows/build.yml@main
     with:
       os: ubuntu-latest
+      dependencies: libglfw3-dev
       archive-build: true
   test:
     name: Test

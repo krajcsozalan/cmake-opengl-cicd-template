@@ -1,0 +1,6 @@
+Language: Cpp
+LineEnding: LF
+ColumnLimit: 80
+IndentWidth: 4
+BreakStringLiterals: false
+SortIncludes: true

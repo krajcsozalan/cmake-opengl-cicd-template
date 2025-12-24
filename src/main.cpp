@@ -19,7 +19,8 @@
 #include <iostream>
 #include <string_view>
 
-#include <GL/gl.h>
+#include <glad/gl.h>
+
 #include <GLFW/glfw3.h>
 
 [[noreturn]] static void glfw_error_callback(int error_code,
@@ -81,8 +82,25 @@ int main(int argc, const char *argv[]) {
 
     std::cout << "Created window" << std::endl;
 
+    int gl_version = gladLoadGL(glfwGetProcAddress);
+    if (!gl_version) {
+        std::cerr << "Failed to initialize glad!" << std::endl;
+
+    std:
+        exit(EXIT_FAILURE);
+    }
+
+    std::cout << "Initialized glad! OpenGL version: "
+              << GLAD_VERSION_MAJOR(gl_version) << "."
+              << GLAD_VERSION_MINOR(gl_version) << std::endl;
+
+    glClearColor(.25f, .5f, 1.f, 1.f);
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glfwSwapBuffers(window);
     }
 
     glfwDestroyWindow(window);

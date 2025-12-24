@@ -20,6 +20,8 @@ on:
       os:
         required: true
         type: string
+      dependencies:
+        type: string
       configuration-options:
         type: string
       build-options:

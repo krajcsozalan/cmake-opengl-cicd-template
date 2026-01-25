@@ -45,6 +45,10 @@ target_compile_options(
 # OpenGL
 find_package(OpenGL 4.6 REQUIRED)
 
+if (NOT TARGET OpenGL::OpenGL)
+    add_library(OpenGL::OpenGL ALIAS OpenGL::GL)
+endif()
+
 target_link_libraries(main PRIVATE OpenGL::OpenGL)
 
 # GLFW

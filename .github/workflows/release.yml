@@ -1,0 +1,84 @@
+# cmake-opengl-cicd-template - Template repository for CMake OpenGL projects
+# Copyright (C) 2026  krajcsozalan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+name: Release
+on:
+  push
+jobs:
+  #package:
+  #  name: Package
+  #  permissions:
+  #    actions: write
+  #    contents: read
+  #  strategy:
+  #    matrix:
+  #      include:
+  #        - os: ubuntu-latest
+  #          dependencies: libglfw3-dev
+  #          python-version: 3.14
+  #          python-dependencies: jinja2
+  #          configuration-options: -G "Ninja Multi-Config"
+  #          build-options: --config Release
+  #          generator: TGZ
+  #          extension: tar.gz
+  #        - os: windows-latest
+  #          dependencies: nsis
+  #          python-version: 3.14
+  #          python-dependencies: jinja2
+  #          build-options: --config Release
+  #          generator: NSIS64
+  #          extension: exe
+  #        - os: macos-latest
+  #          dependencies: glfw
+  #          python-version: 3.14
+  #          python-dependencies: jinja2
+  #          configuration-options: -G "Ninja Multi-Config"
+  #          build-options: --config Release
+  #          generator: DragNDrop
+  #          extension: dmg
+  #  uses: krajcsozalan/cmake-opengl-cicd-template/.github/workflows/package.yml@main
+  #  with:
+  #    os: ${{ matrix.os }}
+  #    dependencies: ${{ matrix.dependencies }}
+  #    python-version: ${{ matrix.python-version }}
+  #    python-dependencies: ${{ matrix.python-dependencies }}
+  #    configuration-options: ${{ matrix.configuration-options }}
+  #    build-options: ${{ matrix.build-options }}
+  #    generator: ${{ matrix.generator }}
+  #    extension: ${{ matrix.extension }}
+  release:
+    name: Release
+    permissions:
+      contents: write
+      id-token: write
+  #  needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: '.git'
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '25.x'
+#      - name: Download packages
+#        uses: actions/download-artifact@v7
+#        with:
+#          name: 'Package (*)'
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release@25 --dry-run

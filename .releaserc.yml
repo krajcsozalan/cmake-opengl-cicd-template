@@ -1,3 +1,17 @@
-branches:
-  main
-dryRun: true
+branches: "main"
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - preset: "conventionalcommits"
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/github"
+    - assets:
+      - path: "*.tar.gz"
+        label: "Linux"
+      - path: "*.exe"
+        label: "Windows"
+      - path: "*.dmg"
+        label: "macOS"
+      successComment: false
+      failComment: false
+      releasedLabels: false
+      discussionCategoryName: false

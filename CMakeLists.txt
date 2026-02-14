@@ -49,8 +49,22 @@ endif()
 
 target_link_libraries(main PRIVATE OpenGL::OpenGL)
 
-# GLFW
+# GLM
 include(FetchContent)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.3
+    GIT_SHALLOW ON
+    FIND_PACKAGE_ARGS 1.0.3
+)
+
+FetchContent_MakeAvailable(glm)
+
+target_link_libraries(main PRIVATE glm)
+
+# GLFW
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs" FORCE)
@@ -95,7 +109,7 @@ add_test(NAME main COMMAND test_main)
 
 # Package
 install(FILES LICENSE TYPE DOC)
-install(TARGETS main glad)
+install(TARGETS main glm glad)
 
 if(glfw_FOUND)
 	install(IMPORTED_RUNTIME_ARTIFACTS glfw)

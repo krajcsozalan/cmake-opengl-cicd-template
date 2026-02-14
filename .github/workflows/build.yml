@@ -83,8 +83,8 @@ jobs:
       - name: Cache project
         uses: actions/cache@v5
         with:
-          key: Build-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'src') }}
-          restore-keys: Build-${{ runner.os }}-
+          key: Build-${{ runner.os }}-${{ inputs.configuration-options }}-${{ inputs.build-options }}-${{ hashFiles('CMakeLists.txt', 'src') }}
+          restore-keys: Build-${{ runner.os }}-${{ inputs.configuration-options }}-${{ inputs.build-options }}
           path: build
       - name: Configure project
         run: cmake -B build ${{ inputs.configuration-options }}

@@ -5,13 +5,13 @@ plugins:
   - "@semantic-release/release-notes-generator"
   - - "@semantic-release/github"
     - assets:
-      - path: "*.tar.gz"
+      - path: "Package (Linux)/*.tar.gz"
         label: "Linux"
-      - path: "*.exe"
+      - path: "Package (Windows)/*.exe"
         label: "Windows"
-      - path: "*.dmg"
+      - path: "Package (macOS)/*.dmg"
         label: "macOS"
-      successComment: false
-      failComment: false
+      successCommentCondition: false
+      failCommentCondition: false
       releasedLabels: false
       discussionCategoryName: false
